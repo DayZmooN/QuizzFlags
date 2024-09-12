@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QuzzFlags</string>
+    <string name="go_play">GO PLAY</string>
+    <string name="quizz">quizz</string>
+</resources>
