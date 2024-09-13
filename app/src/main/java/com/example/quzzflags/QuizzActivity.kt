@@ -1,30 +1,43 @@
 package com.example.quzzflags
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.quzzflags.datas.Datas
 import com.example.quzzflags.model.Question
+import com.example.quzzflags.model.SharedPrefs
 
 class QuizzActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private lateinit var quizzQuestions :List<Question>;
+    private var score = 0
+    private lateinit var sharedPrefs: SharedPrefs
+    private lateinit var scoreText:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_quizz)
+
+        //initialiser le textview du  score
+        scoreText = findViewById(R.id.scoreText)
+        sharedPrefs = SharedPrefs(this)
+
+        // Mettre à jour le score
+        updateScore()
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
 
         // Accéder à la liste des questions
         //val quizQuestions = Datas.items
@@ -84,12 +97,18 @@ class QuizzActivity : AppCompatActivity() {
         // Vide  le message de reponse
         //findViewById<TextView>(R.id.textView).text = ""
     }
-
+private fun updateScore(){
+    scoreText.text = "Score: $score"
+}
     // foncton pour verifier la reponse selectonnée
     private fun checkAnswer(selectedIndex: Int){
         val currentQuestion = quizzQuestions[currentQuestionIndex]
         if(selectedIndex == currentQuestion.index){
             findViewById<TextView>(R.id.textView).text = "Bonne reponse"
+            score++
+            // Mettre à jour le score
+            updateScore()
+
         }else{
             findViewById<TextView>(R.id.textView).text = "Mauvaise reponse"
         }
@@ -103,9 +122,13 @@ class QuizzActivity : AppCompatActivity() {
         }else{
             //afficher un message de fin de quizz
             findViewById<TextView>(R.id.textView).text = "Fin du quizz"
+            endQuizz()
         }
-
-
-
     }
+    //fonction pour terminer le quizz et afficher le score dans une alerte
+    private fun endQuizz() {
+        sharedPrefs.score = score
+    }
+
+
 }
